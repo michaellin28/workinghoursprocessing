@@ -21,7 +21,7 @@ def read_pos_csv(csv_path):
     try:
         # Read the entire CSV first to find the cutoff row
         # Header is in the second row (index 1)
-        full_df = pd.read_csv(csv_path, header=1, dtype=str, keep_default_na=False)
+        full_df = pd.read_csv(csv_path, header=1, dtype=str, keep_default_na=False, on_bad_lines='warn')
 
         cutoff_index = -1
         # Original column B is at index 1
@@ -107,6 +107,8 @@ def process_excel(template_path, csv_data, week_choice, output_path):
         red_fill = PatternFill(start_color="FFFF0000", end_color="FFFF0000", fill_type="solid")
 
         # Build lookup map using normalize()
+# Names to ignore (normalized: lowercase, single internal spaces)
+        ignore_names_set = {"h-r host", "online", "s-common server", "s-johnny server"}
         name_to_row = {}
         for row in range(2, ws.max_row + 1):
             val = ws[f'C{row}'].value
@@ -124,6 +126,12 @@ def process_excel(template_path, csv_data, week_choice, output_path):
                 continue
 
             key = normalize(raw_name)
+
+            # Skip ignored names
+            if key in ignore_names_set:
+                logging.info(f"Skipping ignored name: '{raw_name}'")
+                continue
+
             if key in processed:
                 logging.warning(f"Duplicate entry for '{raw_name}'")
                 continue
