@@ -108,7 +108,9 @@ def process_excel(template_path, csv_data, week_choice, output_path):
 
         # Build lookup map using normalize()
 # Names to ignore (normalized: lowercase, single internal spaces)
-        ignore_names_set = {"h-r host", "online", "s-common server", "s-johnny server"}
+        # Use the *normalized* versions of the names to ignore
+        ignore_names_set = {normalize("H-R Host"), normalize("Online"), normalize("S-COMMON Server"), normalize("S-Johnny Server")}
+        # This will result in: {"h r host", "online", "s common server", "s johnny server"}
         name_to_row = {}
         for row in range(2, ws.max_row + 1):
             val = ws[f'C{row}'].value
