@@ -101,7 +101,14 @@ class ExcelProcessorApp:
 
         try:
             # --- Generate Output Filename ---
-            output_path = generate_output_filename(xlsx_path)
+            # --- Generate Output Filename and Path ---
+            base_output_filename = generate_output_filename(xlsx_path)
+            # Get the user's Downloads folder
+            downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+            # Ensure the Downloads folder exists, create if not (optional, but good practice)
+            if not os.path.exists(downloads_folder):
+                os.makedirs(downloads_folder) # Create if it doesn't exist
+            output_path = os.path.join(downloads_folder, base_output_filename)
 
             # --- Read CSV ---
             self.status_message.set("Reading CSV...")
